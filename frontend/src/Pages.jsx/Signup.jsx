@@ -1,7 +1,9 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Signup.css";
+
+const API_URL =
+    import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 function Signup() {
     const [name, setName] = useState("");
@@ -17,28 +19,38 @@ function Signup() {
 
         try {
             const response = await fetch(
-                "http://localhost:8080/api/auth/register",
+                `${API_URL}/api/auth/register`,
                 {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ name, email, password })
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        password
+                    })
                 }
             );
 
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || "Registration failed");
+                throw new Error(
+                    data.message || "Registration failed"
+                );
             }
 
-            setMessage(data.message);
+            setMessage(
+                data.message || "Account created successfully!"
+            );
             setName("");
             setEmail("");
             setPassword("");
         } catch (error) {
-            setMessage(error.message || "Could not connect to the server");
+            setMessage(
+                error.message || "Could not connect to the server"
+            );
         } finally {
             setLoading(false);
         }
@@ -46,7 +58,10 @@ function Signup() {
 
     return (
         <div className="signup-container">
-            <form className="signup-form" onSubmit={handleSignup}>
+            <form
+                className="signup-form"
+                onSubmit={handleSignup}
+            >
                 <h1>Create Account</h1>
                 <p>Join Smart DSA Learning Platform</p>
 
@@ -55,7 +70,9 @@ function Signup() {
                     id="name"
                     type="text"
                     value={name}
-                    onChange={(event) => setName(event.target.value)}
+                    onChange={(event) =>
+                        setName(event.target.value)
+                    }
                     placeholder="Enter your name"
                     required
                 />
@@ -65,7 +82,9 @@ function Signup() {
                     id="email"
                     type="email"
                     value={email}
-                    onChange={(event) => setEmail(event.target.value)}
+                    onChange={(event) =>
+                        setEmail(event.target.value)
+                    }
                     placeholder="Enter your email"
                     required
                 />
@@ -75,20 +94,29 @@ function Signup() {
                     id="password"
                     type="password"
                     value={password}
-                    onChange={(event) => setPassword(event.target.value)}
+                    onChange={(event) =>
+                        setPassword(event.target.value)
+                    }
                     placeholder="At least 8 characters"
                     minLength={8}
                     required
                 />
 
                 <button type="submit" disabled={loading}>
-                    {loading ? "Creating Account..." : "Sign Up"}
+                    {loading
+                        ? "Creating Account..."
+                        : "Sign Up"}
                 </button>
 
-                {message && <p className="signup-message">{message}</p>}
+                {message && (
+                    <p className="signup-message">
+                        {message}
+                    </p>
+                )}
 
                 <p className="login-link">
-                    Already have an account? <Link to="/login">Login</Link>
+                    Already have an account?{" "}
+                    <Link to="/login">Login</Link>
                 </p>
             </form>
         </div>
