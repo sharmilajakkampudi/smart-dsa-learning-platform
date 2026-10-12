@@ -83,7 +83,7 @@ function App() {
                     }
                 );
 
-                // Session expired
+                // Handle an expired login session
                 if (response.status === 401) {
                     localStorage.removeItem("student");
                     setProgress([]);
@@ -110,9 +110,9 @@ function App() {
         }
 
         fetchProgress();
-    }, [studentData?.id, location.pathname]);
+    }, [studentData?.id, location.pathname, navigate]);
 
-    // Count unique completed questions for each topic
+    // Count completed questions for each topic
     function getCompletedCount(topicName) {
         const completedQuestions = new Set(
             progress
@@ -126,7 +126,7 @@ function App() {
         );
     }
 
-    // Count unique completed questions across all topics
+    // Count completed questions across all topics
     const totalCompleted = Math.min(
         new Set(
             progress
@@ -184,4 +184,137 @@ function App() {
                                     onClick={handleLogout}
                                 >
                                     Logout
-                                </
+                                </button>
+
+                                <div className="dashboard-welcome">
+                                    <h1>
+                                        Smart DSA Learning Platform
+                                    </h1>
+
+                                    <h2>
+                                        Hi, {studentData?.name || "Student"}! 👋
+                                    </h2>
+
+                                    <p>
+                                        Welcome to your DSA learning journey!
+                                    </p>
+                                </div>
+
+                                <section className="overall-progress">
+                                    <h2>My Learning Progress</h2>
+
+                                    {loadingProgress ? (
+                                        <p>Loading your progress...</p>
+                                    ) : (
+                                        <>
+                                            {progressError && (
+                                                <p className="progress-error">
+                                                    {progressError}
+                                                </p>
+                                            )}
+
+                                            <div className="overall-progress-info">
+                                                <h3>
+                                                    {totalCompleted} / {TOTAL_QUESTIONS} questions completed
+                                                </h3>
+
+                                                <p>
+                                                    {overallPercentage}% completed
+                                                </p>
+                                            </div>
+
+                                            <div
+                                                className="progress-track overall-track"
+                                                role="progressbar"
+                                                aria-valuenow={overallPercentage}
+                                                aria-valuemin="0"
+                                                aria-valuemax="100"
+                                            >
+                                                <div
+                                                    className="progress-fill"
+                                                    style={{
+                                                        width: `${overallPercentage}%`
+                                                    }}
+                                                />
+                                            </div>
+
+                                            <h3 className="topic-progress-heading">
+                                                Progress by Topic
+                                            </h3>
+
+                                            <div className="topic-progress-grid">
+                                                {topicNames.map(topicName => {
+                                                    const completed =
+                                                        getCompletedCount(topicName);
+
+                                                    const percentage = Math.round(
+                                                        (completed / QUESTIONS_PER_TOPIC) * 100
+                                                    );
+
+                                                    return (
+                                                        <div
+                                                            className="topic-progress-card"
+                                                            key={topicName}
+                                                        >
+                                                            <div className="topic-progress-label">
+                                                                <strong>
+                                                                    {topicName}
+                                                                </strong>
+
+                                                                <span>
+                                                                    {completed}/{QUESTIONS_PER_TOPIC}
+                                                                </span>
+                                                            </div>
+
+                                                            <div
+                                                                className="progress-track"
+                                                                role="progressbar"
+                                                                aria-valuenow={percentage}
+                                                                aria-valuemin="0"
+                                                                aria-valuemax="100"
+                                                                aria-label={`${topicName} progress`}
+                                                            >
+                                                                <div
+                                                                    className="progress-fill"
+                                                                    style={{
+                                                                        width: `${percentage}%`
+                                                                    }}
+                                                                />
+                                                            </div>
+
+                                                            <p>
+                                                                {percentage}% completed
+                                                            </p>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </>
+                                    )}
+                                </section>
+
+                                <Topics />
+                            </>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/topic/:topicName"
+                    element={
+                        <ProtectedRoute>
+                            <TopicPage />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="*"
+                    element={<Navigate to="/" replace />}
+                />
+            </Routes>
+        </div>
+    );
+}
+
+export default App;
