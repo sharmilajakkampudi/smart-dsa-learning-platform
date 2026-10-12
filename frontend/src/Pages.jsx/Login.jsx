@@ -2,6 +2,9 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 
+const API_URL =
+    import.meta.env.VITE_API_URL || "http://localhost:8080";
+
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -17,10 +20,10 @@ function Login() {
 
         try {
             const response = await fetch(
-                "http://localhost:8080/api/auth/login",
+                `${API_URL}/api/auth/login`,
                 {
                     method: "POST",
-                    credentials: "include", // lets the browser save the session cookie
+                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json"
                     },
@@ -34,10 +37,16 @@ function Login() {
                 throw new Error(data.message || "Login failed");
             }
 
-            localStorage.setItem("student", JSON.stringify(data.student));
+            localStorage.setItem(
+                "student",
+                JSON.stringify(data.student)
+            );
+
             navigate("/home");
         } catch (error) {
-            setMessage(error.message || "Could not connect to the server");
+            setMessage(
+                error.message || "Could not connect to the server"
+            );
         } finally {
             setLoading(false);
         }
@@ -73,10 +82,13 @@ function Login() {
                     {loading ? "Logging in..." : "Login"}
                 </button>
 
-                {message && <p className="login-message">{message}</p>}
+                {message && (
+                    <p className="login-message">{message}</p>
+                )}
 
                 <p>
-                    Don't have an account? <Link to="/signup">Sign Up</Link>
+                    Don't have an account?{" "}
+                    <Link to="/signup">Sign Up</Link>
                 </p>
             </form>
         </div>
