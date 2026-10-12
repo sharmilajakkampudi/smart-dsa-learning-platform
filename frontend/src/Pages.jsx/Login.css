@@ -1,0 +1,88 @@
+.login-container {
+    min-height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 16px;
+}
+
+.login-form {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 30px;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+}
+
+.login-form h1,
+.login-form > p {
+    text-align: center;
+}
+
+.login-form label {
+    font-weight: 600;
+}
+
+.login-form input {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+.login-form button {
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    background: #2563eb;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.login-form button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.login-message {
+    overflow-wrap: anywhere;
+    font-weight: 600;
+}
+
+.login-form a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+/* Show / Hide password button */
+
+.password-field {
+    position: relative;
+}
+
+.login-form .password-field input {
+    width: 100%;
+    padding-right: 70px;
+}
+
+.login-form .password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    padding: 6px 10px;
+    background: transparent;
+    color: #2563eb;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+.login-form .password-toggle:hover {
+    background: #eff6ff;
+}
