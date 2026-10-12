@@ -2,10 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { topics } from "../Data/questions";
 
+const API_URL =
+    import.meta.env.VITE_API_URL || "http://localhost:8080";
+
 function TopicPage() {
     const navigate = useNavigate();
     const { topicName } = useParams();
-    const student = JSON.parse(localStorage.getItem("student") || "null");
+
+    const student = JSON.parse(
+        localStorage.getItem("student") || "null"
+    );
+
     const studentId = student?.id;
 
     const selectedTopic = topics.find(
@@ -33,7 +40,7 @@ function TopicPage() {
         setError("");
 
         fetch(
-            `http://localhost:8080/api/questions?topic=${encodeURIComponent(
+            `${API_URL}/api/questions?topic=${encodeURIComponent(
                 selectedTopic.name
             )}`
         )
@@ -48,15 +55,19 @@ function TopicPage() {
             })
             .then(data => {
                 if (!cancelled) {
-                    setTopicQuestions(data);
+                    setTopicQuestions(
+                        Array.isArray(data) ? data : []
+                    );
                 }
             })
             .catch(error => {
                 if (!cancelled) {
                     console.error("Error loading questions:", error);
+
                     setError(
                         "Unable to load questions. Check the backend and browser console."
                     );
+
                     setTopicQuestions([]);
                 }
             })
@@ -83,7 +94,9 @@ function TopicPage() {
         setSolvedQuestions([]);
 
         fetch(
-            `http://localhost:8080/api/progress?studentId=${studentId}&topic=${encodeURIComponent(selectedTopic.name)}`,
+            `${API_URL}/api/progress?topic=${encodeURIComponent(
+                selectedTopic.name
+            )}`,
             {
                 credentials: "include"
             }
@@ -92,6 +105,7 @@ function TopicPage() {
                 if (!response.ok) {
                     throw new Error("Failed to load progress");
                 }
+
                 return response.json();
             })
             .then(data => {
@@ -124,26 +138,29 @@ function TopicPage() {
         }
 
         const url =
-            `http://localhost:8080/api/progress?studentId=${studentId}` +
-            `&topic=${encodeURIComponent(selectedTopic.name)}` +
+            `${API_URL}/api/progress?topic=${encodeURIComponent(
+                selectedTopic.name
+            )}` +
             `&questionName=${encodeURIComponent(questionName)}`;
 
         try {
             let response;
 
             if (checked) {
-                response = await fetch("http://localhost:8080/api/progress", {
-                    method: "POST",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        studentId,
-                        topic: selectedTopic.name,
-                        questionName
-                    })
-                });
+                response = await fetch(
+                    `${API_URL}/api/progress`,
+                    {
+                        method: "POST",
+                        credentials: "include",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            topic: selectedTopic.name,
+                            questionName
+                        })
+                    }
+                );
             } else {
                 response = await fetch(url, {
                     method: "DELETE",
@@ -164,7 +181,10 @@ function TopicPage() {
             );
         } catch (error) {
             console.error("Error saving progress:", error);
-            alert("Unable to save progress. Please check the backend.");
+
+            alert(
+                "Unable to save progress. Please check the backend."
+            );
         }
     }
 
@@ -214,6 +234,7 @@ function TopicPage() {
             <div className="array-header">
                 <div>
                     <h2>{selectedTopic.name}</h2>
+
                     <p className="topic-description">
                         Practise consistently and track your progress.
                     </p>
@@ -223,6 +244,7 @@ function TopicPage() {
                     <span className="solved-number">
                         {solvedCount}
                     </span>
+
                     <span> / {topicQuestions.length} Solved</span>
                 </div>
             </div>
@@ -263,7 +285,9 @@ function TopicPage() {
                         Loading questions...
                     </div>
                 ) : error ? (
-                    <div className="no-questions">{error}</div>
+                    <div className="no-questions">
+                        {error}
+                    </div>
                 ) : filteredQuestions.length > 0 ? (
                     filteredQuestions.map(question => (
                         <div
