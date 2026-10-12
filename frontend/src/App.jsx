@@ -1,4 +1,5 @@
 import "./App.css";
+
 import {
     Routes,
     Route,
@@ -6,12 +7,16 @@ import {
     useNavigate,
     useLocation
 } from "react-router-dom";
+
 import { useEffect, useState } from "react";
 
 import Topics from "./Pages.jsx/Topics";
 import TopicPage from "./Pages.jsx/TopicPage";
 import Signup from "./Pages.jsx/Signup";
 import Login from "./Pages.jsx/Login";
+
+const API_URL =
+    import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 // All 11 topics in the platform
 const topicNames = [
@@ -72,14 +77,13 @@ function App() {
 
             try {
                 const response = await fetch(
-                    "http://localhost:8080/api/progress/all",
+                    `${API_URL}/api/progress/all`,
                     {
                         credentials: "include"
                     }
                 );
 
-                // Session expired (for example after a backend restart):
-                // clear the old login and go back to the login page
+                // Session expired
                 if (response.status === 401) {
                     localStorage.removeItem("student");
                     setProgress([]);
@@ -96,6 +100,7 @@ function App() {
                 setProgress(Array.isArray(data) ? data : []);
             } catch (error) {
                 console.error("Progress loading error:", error);
+
                 setProgressError(
                     "Unable to load progress. Please check your backend."
                 );
@@ -137,7 +142,7 @@ function App() {
 
     async function handleLogout() {
         try {
-            await fetch("http://localhost:8080/api/auth/logout", {
+            await fetch(`${API_URL}/api/auth/logout`, {
                 method: "POST",
                 credentials: "include"
             });
@@ -179,137 +184,4 @@ function App() {
                                     onClick={handleLogout}
                                 >
                                     Logout
-                                </button>
-
-                                <div className="dashboard-welcome">
-                                    <h1>
-                                        Smart DSA Learning Platform
-                                    </h1>
-
-                                    <h2>
-                                        Hi, {studentData?.name || "Student"}! 👋
-                                    </h2>
-
-                                    <p>
-                                        Welcome to your DSA learning journey!
-                                    </p>
-                                </div>
-
-                                <section className="overall-progress">
-                                    <h2>My Learning Progress</h2>
-
-                                    {loadingProgress ? (
-                                        <p>Loading your progress...</p>
-                                    ) : (
-                                        <>
-                                            {progressError && (
-                                                <p className="progress-error">
-                                                    {progressError}
-                                                </p>
-                                            )}
-
-                                            <div className="overall-progress-info">
-                                                <h3>
-                                                    {totalCompleted} / {TOTAL_QUESTIONS} questions completed
-                                                </h3>
-
-                                                <p>
-                                                    {overallPercentage}% completed
-                                                </p>
-                                            </div>
-
-                                            <div
-                                                className="progress-track overall-track"
-                                                role="progressbar"
-                                                aria-valuenow={overallPercentage}
-                                                aria-valuemin="0"
-                                                aria-valuemax="100"
-                                            >
-                                                <div
-                                                    className="progress-fill"
-                                                    style={{
-                                                        width: `${overallPercentage}%`
-                                                    }}
-                                                />
-                                            </div>
-
-                                            <h3 className="topic-progress-heading">
-                                                Progress by Topic
-                                            </h3>
-
-                                            <div className="topic-progress-grid">
-                                                {topicNames.map(topicName => {
-                                                    const completed =
-                                                        getCompletedCount(topicName);
-
-                                                    const percentage = Math.round(
-                                                        (completed / QUESTIONS_PER_TOPIC) * 100
-                                                    );
-
-                                                    return (
-                                                        <div
-                                                            className="topic-progress-card"
-                                                            key={topicName}
-                                                        >
-                                                            <div className="topic-progress-label">
-                                                                <strong>
-                                                                    {topicName}
-                                                                </strong>
-
-                                                                <span>
-                                                                    {completed}/{QUESTIONS_PER_TOPIC}
-                                                                </span>
-                                                            </div>
-
-                                                            <div
-                                                                className="progress-track"
-                                                                role="progressbar"
-                                                                aria-valuenow={percentage}
-                                                                aria-valuemin="0"
-                                                                aria-valuemax="100"
-                                                                aria-label={`${topicName} progress`}
-                                                            >
-                                                                <div
-                                                                    className="progress-fill"
-                                                                    style={{
-                                                                        width: `${percentage}%`
-                                                                    }}
-                                                                />
-                                                            </div>
-
-                                                            <p>
-                                                                {percentage}% completed
-                                                            </p>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        </>
-                                    )}
-                                </section>
-
-                                <Topics />
-                            </>
-                        </ProtectedRoute>
-                    }
-                />
-
-                <Route
-                    path="/topic/:topicName"
-                    element={
-                        <ProtectedRoute>
-                            <TopicPage />
-                        </ProtectedRoute>
-                    }
-                />
-
-                <Route
-                    path="*"
-                    element={<Navigate to="/" replace />}
-                />
-            </Routes>
-        </div>
-    );
-}
-
-export default App;
+                                </
